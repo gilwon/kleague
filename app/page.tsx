@@ -376,8 +376,10 @@ export default function Home() {
         </div>
 
         {/* 리그 탭 + 순위표 버튼 */}
-        <div className="max-w-3xl mx-auto px-4 flex items-center justify-between">
-          <ScheduleTab activeLeague={activeLeague} onChange={handleLeagueChange} />
+        <div className="max-w-3xl mx-auto px-4 flex items-center gap-2">
+          <div className="flex-1 min-w-0">
+            <ScheduleTab activeLeague={activeLeague} onChange={handleLeagueChange} />
+          </div>
           <button
             onClick={() => setStandingsOpen(true)}
             className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[var(--muted)] border border-[var(--border)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors"

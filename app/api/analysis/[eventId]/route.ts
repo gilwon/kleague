@@ -122,7 +122,15 @@ export async function GET(
     }
   }
 
-  // 2. 프롬프트 생성
+  // 2. API 키 확인
+  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const hasGroq   = !!process.env.GROQ_API_KEY;
+  if (!hasGemini && !hasGroq) {
+    console.error('[/api/analysis] GEMINI_API_KEY, GROQ_API_KEY 모두 미설정');
+    return NextResponse.json({ error: 'no_api_key' as const }, { status: 503 });
+  }
+
+  // 3. 프롬프트 생성
   const prompt =
     type === 'pre'
       ? buildPrePromptFromParams(searchParams)

@@ -7,7 +7,7 @@ interface ScheduleTabProps {
 
 export default function ScheduleTab({ activeLeague, onChange }: ScheduleTabProps) {
   return (
-    <div className="flex border-b border-[var(--border)]">
+    <div className="flex w-full border-b border-[var(--border)]">
       {(['k1', 'k2'] as const).map((key) => {
         const label = key === 'k1' ? 'K리그1' : 'K리그2';
         const isActive = activeLeague === key;

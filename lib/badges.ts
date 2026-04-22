@@ -45,6 +45,6 @@ export const BADGE_MAP: Record<string, string> = {
 
 export function getBadgeUrl(teamName: string, supabaseUrl: string): string | null {
   const kcode = BADGE_MAP[teamName];
-  if (!kcode) return null;
+  if (!kcode || !supabaseUrl || !supabaseUrl.startsWith('http')) return null;
   return `${supabaseUrl}/storage/v1/object/public/team-badges/${kcode}.png`;
 }
