@@ -152,6 +152,7 @@ export function predict(
   teamsByName: Record<string, TeamData>,
   events: MatchEvent[]
 ): Prediction {
+  // 최근 폼 가중 점수 (최신 경기 우선, 0~1)
   function fs(name: string): number {
     const form = recentForm(name, events, 5);
     let score = 0, w = 1, tot = 0;
@@ -162,9 +163,10 @@ export function predict(
       }
       w++;
     }
-    return tot > 0 ? score / tot : 0.33;
+    return tot > 0 ? score / tot : 0.5;
   }
 
+  // 경기당 승점 정규화 (0~1)
   function ppg(name: string): number {
     const t = teamsByName[name];
     return t && t.played && t.played > 0 && t.points !== null && t.points !== undefined
@@ -172,8 +174,43 @@ export function predict(
       : fs(name);
   }
 
-  const hS = 0.55 * fs(hName) + 0.35 * ppg(hName) + 0.08;
-  const aS = 0.55 * fs(aName) + 0.35 * ppg(aName);
+  // 팀의 홈 경기 실제 승률 (0~1)
+  function homeWinRate(name: string): number {
+    const played = events.filter(
+      (e) => e.strHomeTeam === name && e.intHomeScore !== null && e.intHomeScore !== ''
+    );
+    if (played.length === 0) return 0.55;
+    const wins = played.filter(
+      (e) => parseInt(e.intHomeScore!) > parseInt(e.intAwayScore!)
+    ).length;
+    return wins / played.length;
+  }
+
+  // 팀의 원정 경기 실제 승률 (0~1)
+  function awayWinRate(name: string): number {
+    const played = events.filter(
+      (e) => e.strAwayTeam === name && e.intHomeScore !== null && e.intHomeScore !== ''
+    );
+    if (played.length === 0) return 0.35;
+    const wins = played.filter(
+      (e) => parseInt(e.intAwayScore!) > parseInt(e.intHomeScore!)
+    ).length;
+    return wins / played.length;
+  }
+
+  // 상대전적: 홈팀 기준 점수 (전적 없으면 0.5 중립)
+  const h2hData = h2h(hName, aName, events);
+  const h2hHome = h2hData.total > 0
+    ? (h2hData.wa * 3 + h2hData.d) / (h2hData.total * 3)
+    : 0.5;
+  const h2hAway = h2hData.total > 0
+    ? (h2hData.wb * 3 + h2hData.d) / (h2hData.total * 3)
+    : 0.5;
+
+  // 종합 점수: 폼 40% + 순위승점 25% + 상대전적 20% + 홈/원정 실제승률 15%
+  const hS = 0.40 * fs(hName) + 0.25 * ppg(hName) + 0.20 * h2hHome + 0.15 * homeWinRate(hName);
+  const aS = 0.40 * fs(aName) + 0.25 * ppg(aName) + 0.20 * h2hAway + 0.15 * awayWinRate(aName);
+
   const diff = hS - aS;
 
   let ph = Math.max(0.08, Math.min(0.80, 0.5 + diff * 1.5));
