@@ -92,8 +92,8 @@ export default function StandingsModal({ allEvents, teamsByName, leagueKey, onCl
         </div>
 
         {/* 테이블 헤더 */}
-        <div className="px-4 py-1.5 grid grid-cols-[auto_1fr_repeat(7,auto)] gap-x-3 text-[10px] text-[var(--muted)] font-semibold border-b border-white/5">
-          <span className="w-4 text-center">#</span>
+        <div className="px-4 py-1.5 grid grid-cols-[20px_1fr_34px_26px_26px_26px_26px_26px_34px] gap-x-1.5 text-[10px] text-[var(--muted)] font-semibold border-b border-white/5">
+          <span className="text-center">#</span>
           <span>팀</span>
           <span className="text-center">경기</span>
           <span className="text-center">승</span>
@@ -110,12 +110,12 @@ export default function StandingsModal({ allEvents, teamsByName, leagueKey, onCl
             <div
               key={row.name}
               className={[
-                'px-4 py-2 grid grid-cols-[auto_1fr_repeat(7,auto)] gap-x-3 items-center text-[12px]',
+                'px-4 py-2 grid grid-cols-[20px_1fr_34px_26px_26px_26px_26px_26px_34px] gap-x-1.5 items-center text-[12px]',
                 i % 2 === 0 ? '' : 'bg-white/[0.02]',
                 row.rank <= 2 ? 'text-[var(--win)]' : row.rank <= 6 ? 'text-[var(--text)]' : 'text-[var(--muted)]',
               ].join(' ')}
             >
-              <span className="font-bold w-4 text-center">{row.rank}</span>
+              <span className="font-bold text-center">{row.rank}</span>
               <span className="font-semibold truncate">{ko(row.name)}</span>
               <span className="text-center">{row.played}</span>
               <span className="text-center">{row.win}</span>
