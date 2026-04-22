@@ -1,24 +1,29 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+// Supabase clients are lazy-initialized to avoid crashes at build time.
+// createClient is never called at module evaluation — only on first request.
 
-let _anon: SupabaseClient | null = null;
-let _admin: SupabaseClient | null = null;
+let _anon: import('@supabase/supabase-js').SupabaseClient | null = null;
+let _admin: import('@supabase/supabase-js').SupabaseClient | null = null;
 
-export function getSupabaseAnon(): SupabaseClient {
+export function getSupabaseAnon() {
   if (!_anon) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !key) throw new Error('Supabase anon env vars missing');
-    _anon = createClient(url, key);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createClient } = require('@supabase/supabase-js');
+    _anon = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
   }
-  return _anon;
+  return _anon!;
 }
 
-export function getSupabaseAdmin(): SupabaseClient {
+export function getSupabaseAdmin() {
   if (!_admin) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) throw new Error('Supabase admin env vars missing');
-    _admin = createClient(url, key);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createClient } = require('@supabase/supabase-js');
+    _admin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
   }
-  return _admin;
+  return _admin!;
 }
