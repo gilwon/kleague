@@ -1,4 +1,4 @@
-import { supabaseAnon, supabaseAdmin } from './supabase';
+import { getSupabaseAnon, getSupabaseAdmin } from './supabase';
 import type { MatchEvent } from '@/types';
 
 interface DbRow {
@@ -52,7 +52,7 @@ export async function getEventsFromDb(
   league_key: string,
   season: string
 ): Promise<MatchEvent[]> {
-  const { data, error } = await supabaseAnon
+  const { data, error } = await getSupabaseAnon()
     .from('match_events')
     .select('*')
     .eq('league_key', league_key)
@@ -69,7 +69,7 @@ export async function getEventsByRoundsFromDb(
   season: string,
   rounds: number[]
 ): Promise<{ events: MatchEvent[]; roundsInDb: Set<number>; staleRounds: Set<number> }> {
-  const { data, error } = await supabaseAnon
+  const { data, error } = await getSupabaseAnon()
     .from('match_events')
     .select('*')
     .eq('league_key', league_key)
@@ -117,7 +117,7 @@ export async function upsertEvents(
 ): Promise<void> {
   if (events.length === 0) return;
   const rows = events.map((e) => toDbRow(e, league_key, season));
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('match_events')
     .upsert(rows, { onConflict: 'event_id' });
   if (error) throw error;
@@ -132,7 +132,7 @@ export async function updateScores(
     events
       .filter((e) => e.intHomeScore !== null)
       .map((e) =>
-        supabaseAdmin
+        getSupabaseAdmin()
           .from('match_events')
           .update({
             home_score: e.intHomeScore,

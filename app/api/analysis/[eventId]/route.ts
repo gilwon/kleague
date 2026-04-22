@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAnalysis, generateAnalysisStream, filterForeignChars } from '@/lib/ai';
-import { supabaseAnon, supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAnon, getSupabaseAdmin } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 import { KO } from '@/lib/football';
 import type { Prediction, H2HData } from '@/types';
 
@@ -99,7 +101,7 @@ export async function GET(
   // 1. Supabase 캐시 조회 (force=true면 건너뜀)
   if (!force) {
     try {
-      const { data, error } = await supabaseAnon
+      const { data, error } = await getSupabaseAnon()
         .from('ai_analysis')
         .select('content, provider, model')
         .eq('event_id', eventId)
@@ -141,7 +143,7 @@ export async function GET(
         flush() {
           const fullText = filterForeignChars(allChunks.join(''));
           if (fullText) {
-            void supabaseAdmin
+            void getSupabaseAdmin()
               .from('ai_analysis')
               .upsert(
                 { event_id: eventId, analysis_type: type, provider, content: fullText, model },
@@ -175,7 +177,7 @@ export async function GET(
 
     // 4. Supabase upsert (중복 요청 시 unique 충돌 방지)
     try {
-      await supabaseAdmin.from('ai_analysis').upsert(
+      await getSupabaseAdmin().from('ai_analysis').upsert(
         { event_id: eventId, analysis_type: type, provider, content: text, model },
         { onConflict: 'event_id,analysis_type' }
       );

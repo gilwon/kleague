@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, supabaseAnon } from '@/lib/supabase';
+import { getSupabaseAdmin, getSupabaseAnon } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 import { generateMatchReport, generateMatchReportStream, filterForeignChars, REPORT_STREAM_SOURCES_MARKER, MatchSource } from '@/lib/ai';
 
 export async function GET(
@@ -24,7 +26,7 @@ export async function GET(
   // ─── 1. Supabase 캐시 확인 (force=true면 건너뜀) ────────
   if (!force) {
     try {
-      const { data } = await supabaseAnon
+      const { data } = await getSupabaseAnon()
         .from('ai_analysis')
         .select('content, provider, model')
         .eq('event_id', eventId)
@@ -64,7 +66,7 @@ export async function GET(
 
           if (summary) {
             const content = JSON.stringify({ summary, sources, provider, model });
-            void supabaseAdmin
+            void getSupabaseAdmin()
               .from('ai_analysis')
               .upsert(
                 { event_id: eventId, analysis_type: 'report', provider, content, model },
@@ -106,7 +108,7 @@ export async function GET(
     };
 
     // ─── 3. Supabase 저장 ────────────────────────────────────
-    await supabaseAdmin
+    await getSupabaseAdmin()
       .from('ai_analysis')
       .upsert(
         {

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 import { BADGE_MAP } from '@/lib/badges';
 
 const BUCKET_NAME = 'team-badges';
@@ -28,7 +30,7 @@ export async function POST() {
 async function syncBadges() {
   // 1. team-badges 버킷 생성 (이미 있으면 무시)
   try {
-    const { error: bucketError } = await supabaseAdmin.storage.createBucket(
+    const { error: bucketError } = await getSupabaseAdmin().storage.createBucket(
       BUCKET_NAME,
       { public: true }
     );
@@ -66,7 +68,7 @@ async function syncBadges() {
       const arrayBuffer = await imgRes.arrayBuffer();
       const imageBuffer = Buffer.from(arrayBuffer);
 
-      const { error: uploadError } = await supabaseAdmin.storage
+      const { error: uploadError } = await getSupabaseAdmin().storage
         .from(BUCKET_NAME)
         .upload(`${kcode}.png`, imageBuffer, {
           contentType: 'image/png',

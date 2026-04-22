@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentSeason } from '@/lib/season';
 import { getEventsByRoundsFromDb, upsertEvents, updateScores } from '@/lib/matchDb';

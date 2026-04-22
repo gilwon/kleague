@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getBadgeUrl } from '@/lib/badges';
 import { getCurrentSeason } from '@/lib/season';
