@@ -150,7 +150,8 @@ export function predict(
   hName: string,
   aName: string,
   teamsByName: Record<string, TeamData>,
-  events: MatchEvent[]
+  events: MatchEvent[],
+  historyEvents?: MatchEvent[]  // H2H 계산용 (여러 시즌 합산)
 ): Prediction {
   // 최근 폼 가중 점수 (최신 경기 우선, 0~1)
   function fs(name: string): number {
@@ -198,8 +199,8 @@ export function predict(
     return wins / played.length;
   }
 
-  // 상대전적: 홈팀 기준 점수 (전적 없으면 0.5 중립)
-  const h2hData = h2h(hName, aName, events);
+  // 상대전적: 홈팀 기준 점수 (여러 시즌 데이터 우선, 없으면 0.5 중립)
+  const h2hData = h2h(hName, aName, historyEvents ?? events);
   const h2hHome = h2hData.total > 0
     ? (h2hData.wa * 3 + h2hData.d) / (h2hData.total * 3)
     : 0.5;

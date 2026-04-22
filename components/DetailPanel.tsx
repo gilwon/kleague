@@ -11,6 +11,7 @@ interface DetailPanelProps {
   event: MatchEvent;
   leagueKey: 'k1' | 'k2';
   allEvents: MatchEvent[];
+  historyEvents?: MatchEvent[];  // 여러 시즌 합산 이벤트 (H2H·예측용)
   teamsByName: Record<string, TeamData>;
   onClose: () => void;
   onQuotaExceeded: () => void;
@@ -22,6 +23,7 @@ export default function DetailPanel({
   event,
   leagueKey,
   allEvents,
+  historyEvents,
   teamsByName,
   onClose,
   onQuotaExceeded,
@@ -52,10 +54,11 @@ export default function DetailPanel({
     name: event.strAwayTeam,
   };
 
-  const h2hData = h2h(event.strHomeTeam, event.strAwayTeam, allEvents);
+  const h2hSrc = historyEvents ?? allEvents;
+  const h2hData = h2h(event.strHomeTeam, event.strAwayTeam, h2hSrc);
   const homeStrengths = strengths(event.strHomeTeam, teamsByName, allEvents);
   const awayStrengths = strengths(event.strAwayTeam, teamsByName, allEvents);
-  const prediction = predict(event.strHomeTeam, event.strAwayTeam, teamsByName, allEvents);
+  const prediction = predict(event.strHomeTeam, event.strAwayTeam, teamsByName, allEvents, h2hSrc);
 
   // 폼 문자열 (쿼리용)
   const hForm = recentForm(event.strHomeTeam, allEvents).join('');

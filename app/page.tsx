@@ -316,6 +316,23 @@ export default function Home() {
     }
   };
 
+  // 현재 리그의 모든 로드된 시즌 이벤트 합산 (H2H·역대전적용)
+  const allLeagueEvents = useMemo(() => {
+    const seen = new Set<string>();
+    const result: MatchEvent[] = [];
+    for (const season of SEASONS) {
+      const data = leagueData[dataKey(activeLeague, season)];
+      if (!data) continue;
+      for (const e of data.events) {
+        if (!seen.has(e.idEvent)) {
+          seen.add(e.idEvent);
+          result.push(e);
+        }
+      }
+    }
+    return result;
+  }, [leagueData, activeLeague, SEASONS]);
+
   // 이벤트·월 계산 (나의 팀 필터 적용)
   const allEvents = currentData?.events ?? [];
   const events = useMemo(() => {
@@ -562,6 +579,7 @@ export default function Home() {
           event={selectedEvent}
           leagueKey={activeLeague}
           allEvents={events}
+          historyEvents={allLeagueEvents}
           teamsByName={teamsByName}
           onClose={() => setSelectedEvent(null)}
           onQuotaExceeded={() =>
