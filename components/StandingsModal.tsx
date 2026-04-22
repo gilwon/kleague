@@ -93,15 +93,15 @@ export default function StandingsModal({ allEvents, teamsByName, leagueKey, onCl
 
         {/* 테이블 헤더 */}
         <div className="px-4 py-1.5 grid grid-cols-[auto_1fr_repeat(7,auto)] gap-x-3 text-[10px] text-[var(--muted)] font-semibold border-b border-white/5">
-          <span>#</span>
+          <span className="w-4 text-center">#</span>
           <span>팀</span>
-          <span>경기</span>
-          <span>승</span>
-          <span>무</span>
-          <span>패</span>
-          <span>득</span>
-          <span>실</span>
-          <span className="text-[var(--accent)]">점</span>
+          <span className="text-center">경기</span>
+          <span className="text-center">승</span>
+          <span className="text-center">무</span>
+          <span className="text-center">패</span>
+          <span className="text-center">득</span>
+          <span className="text-center">실</span>
+          <span className="text-center text-[var(--accent)]">승점</span>
         </div>
 
         {/* 순위 목록 */}
