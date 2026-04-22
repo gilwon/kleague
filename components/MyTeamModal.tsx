@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { MatchEvent, TeamData } from '@/types';
 import { ko } from '@/lib/football';
+import BadgeImg from '@/components/BadgeImg';
 
 interface MyTeamModalProps {
   allEvents: MatchEvent[];
@@ -12,31 +13,6 @@ interface MyTeamModalProps {
   onSelect: (teamKo: string, league: 'k1' | 'k2') => void;
   onRemove: () => void;
   onClose: () => void;
-}
-
-function TeamBadge({ badge, fallbackBadge, name, size = 36 }: { badge?: string | null; fallbackBadge?: string | null; name: string; size?: number }) {
-  const [stage, setStage] = useState(0);
-  const src = stage === 0 ? badge : stage === 1 ? fallbackBadge : null;
-  if (!src) {
-    return (
-      <span
-        className="team-badge-fallback text-[10px] font-bold shrink-0"
-        style={{ width: size, height: size, minWidth: size }}
-      >
-        {name.slice(0, 2)}
-      </span>
-    );
-  }
-  return (
-    <img
-      src={src}
-      alt={name}
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain', minWidth: size }}
-      onError={() => setStage((s) => s + 1)}
-    />
-  );
 }
 
 export default function MyTeamModal({
@@ -155,7 +131,7 @@ export default function MyTeamModal({
                         : 'hover:bg-[var(--panel2)] border border-transparent',
                     ].join(' ')}
                   >
-                    <TeamBadge badge={data?.badge} fallbackBadge={data?.fallbackBadge} name={koName} size={36} />
+                    <BadgeImg badge={data?.badge} fallbackBadge={data?.fallbackBadge} label={koName} size={36} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-bold text-[var(--text)]">{koName}</div>
                       {data?.rank != null && (

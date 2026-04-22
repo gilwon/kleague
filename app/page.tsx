@@ -56,6 +56,7 @@ function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
 
 // ── 일별 동기화 헬퍼 ─────────────────────────────────────
 function todayStr() { return new Date().toISOString().slice(0, 10); }
+function todayISO() { return new Date().toISOString().slice(0, 10); }
 function isSyncedToday(league: string, season: string): boolean {
   try { return localStorage.getItem(`${DAILY_SYNC_KEY_PREFIX}${league}_${season}`) === todayStr(); }
   catch { return false; }
@@ -321,6 +322,11 @@ export default function Home() {
     return allEvents;
   }, [allEvents, myTeamFilterActive, myTeam]);
   const teamsByName = currentData?.teamsByName ?? {};
+  const myTeamEntry = useMemo(() => {
+    if (!myTeam) return null;
+    const entry = Object.entries(teamsByName).find(([name]) => ko(name) === myTeam);
+    return entry?.[1] ?? null;
+  }, [myTeam, teamsByName]);
   const months = useMemo(() => getMonths(events), [events]);
 
   // 오늘 달(또는 첫 달) 자동 선택
@@ -362,6 +368,8 @@ export default function Home() {
             myTeamFilterActive={myTeamFilterActive}
             onMyTeamFilterToggle={handleMyTeamFilterToggle}
             onMyTeamEdit={() => setMyTeamModalOpen(true)}
+            myTeamBadge={myTeamEntry?.badge ?? null}
+            myTeamFallbackBadge={myTeamEntry?.fallbackBadge ?? null}
           />
         </div>
 
@@ -428,20 +436,25 @@ export default function Home() {
             {/* 날짜 칩 */}
             <div className="max-w-3xl mx-auto px-4 date-chip-bar">
               <div className="flex gap-2 pb-3">
-                {Array.from(dateGroups.keys()).map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setSelectedDate(d)}
-                    className={[
-                      'shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors whitespace-nowrap',
-                      selectedDate === d
-                        ? 'bg-[var(--accent)] text-white'
-                        : 'text-[var(--muted)] hover:bg-[var(--panel)] hover:text-[var(--text)]',
-                    ].join(' ')}
-                  >
-                    {fmtDate(d)}
-                  </button>
-                ))}
+                {(() => {
+                  const today = todayISO();
+                  return Array.from(dateGroups.keys()).map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setSelectedDate(d)}
+                      className={[
+                        'shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors whitespace-nowrap',
+                        selectedDate === d
+                          ? 'bg-[var(--accent)] text-white'
+                          : d === today
+                          ? 'text-[var(--text)] font-bold ring-1 ring-[var(--accent)]/50'
+                          : 'text-[var(--muted)] hover:bg-[var(--panel)] hover:text-[var(--text)]',
+                      ].join(' ')}
+                    >
+                      {fmtDate(d)}
+                    </button>
+                  ));
+                })()}
               </div>
             </div>
           </>
@@ -483,6 +496,30 @@ export default function Home() {
         {/* 로딩 완료: 일정 표시 */}
         {!loading && !error && bgStatus !== currentDK && (
           <>
+            {/* 나의 팀 전적 요약 */}
+            {myTeamFilterActive && myTeam && (() => {
+              let wins = 0, draws = 0, losses = 0;
+              for (const e of events) {
+                if (e.intHomeScore == null || e.intAwayScore == null || e.intHomeScore === '' || e.intAwayScore === '') continue;
+                const hs = parseInt(e.intHomeScore), as_ = parseInt(e.intAwayScore);
+                const isHome = ko(e.strHomeTeam) === myTeam;
+                const isAway = ko(e.strAwayTeam) === myTeam;
+                if (!isHome && !isAway) continue;
+                if ((isHome && hs > as_) || (isAway && as_ > hs)) wins++;
+                else if (hs === as_) draws++;
+                else losses++;
+              }
+              const played = wins + draws + losses;
+              const points = wins * 3 + draws;
+              return played > 0 ? (
+                <div className="mb-3 px-3 py-2 rounded-xl bg-[#3ea6ff]/10 border border-[#3ea6ff]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#3ea6ff]">{myTeam} 시즌 전적</span>
+                  <span className="text-[11px] text-[var(--muted)]">
+                    {played}경기 <span className="text-[var(--win)] font-bold">{wins}승</span> {draws}무 {losses}패 · {points}점
+                  </span>
+                </div>
+              ) : null;
+            })()}
             {dateGroups.size === 0 ? (
               <div className="py-16 text-center text-[var(--muted)] text-sm">
                 {currentData ? '이 달에 경기가 없습니다.' : '데이터를 불러오는 중...'}

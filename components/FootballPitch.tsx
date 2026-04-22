@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MatchEvent, TeamData } from '@/types';
 import { ko, fmtDate, formatKSTTime, recentForm } from '@/lib/football';
+import BadgeImg from '@/components/BadgeImg';
 
 interface FootballPitchProps {
   homeTeam: TeamData & { name: string };
@@ -44,40 +45,6 @@ function computeStandings(events: MatchEvent[]): Record<string, { rank: number; 
   return result;
 }
 
-function BadgeImg({
-  badge,
-  fallbackBadge,
-  name,
-  size = 56,
-}: {
-  badge?: string | null;
-  fallbackBadge?: string | null;
-  name: string;
-  size?: number;
-}) {
-  const [stage, setStage] = useState(0); // 0=primary, 1=fallback, 2=text
-  const src = stage === 0 ? badge : stage === 1 ? fallbackBadge : null;
-  if (!src) {
-    return (
-      <span
-        className="team-badge-fallback text-base font-bold"
-        style={{ width: size, height: size, minWidth: size }}
-      >
-        {ko(name).slice(0, 2)}
-      </span>
-    );
-  }
-  return (
-    <img
-      src={src}
-      alt={ko(name)}
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-      onError={() => setStage((s) => s + 1)}
-    />
-  );
-}
 
 export default function FootballPitch({
   homeTeam,
@@ -157,7 +124,7 @@ export default function FootballPitch({
         }}
       >
         <span className="text-[10px] font-bold text-[#ff5a5f] tracking-widest">HOME</span>
-        <BadgeImg badge={homeTeam.badge} fallbackBadge={homeTeam.fallbackBadge} name={homeTeam.name} size={52} />
+        <BadgeImg badge={homeTeam.badge} fallbackBadge={homeTeam.fallbackBadge} label={ko(homeTeam.name)} size={52} />
         <span className="text-sm font-bold text-white text-center leading-tight">
           {ko(homeTeam.name)}
         </span>
@@ -201,7 +168,7 @@ export default function FootballPitch({
         }}
       >
         <span className="text-[10px] font-bold text-[#3ea6ff] tracking-widest">AWAY</span>
-        <BadgeImg badge={awayTeam.badge} fallbackBadge={awayTeam.fallbackBadge} name={awayTeam.name} size={52} />
+        <BadgeImg badge={awayTeam.badge} fallbackBadge={awayTeam.fallbackBadge} label={ko(awayTeam.name)} size={52} />
         <span className="text-sm font-bold text-white text-center leading-tight">
           {ko(awayTeam.name)}
         </span>
