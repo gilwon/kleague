@@ -14,9 +14,10 @@ interface MyTeamModalProps {
   onClose: () => void;
 }
 
-function TeamBadge({ badge, name, size = 36 }: { badge?: string | null; name: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (!badge || failed) {
+function TeamBadge({ badge, fallbackBadge, name, size = 36 }: { badge?: string | null; fallbackBadge?: string | null; name: string; size?: number }) {
+  const [stage, setStage] = useState(0);
+  const src = stage === 0 ? badge : stage === 1 ? fallbackBadge : null;
+  if (!src) {
     return (
       <span
         className="team-badge-fallback text-[10px] font-bold shrink-0"
@@ -28,12 +29,12 @@ function TeamBadge({ badge, name, size = 36 }: { badge?: string | null; name: st
   }
   return (
     <img
-      src={badge}
+      src={src}
       alt={name}
       width={size}
       height={size}
       style={{ width: size, height: size, objectFit: 'contain', minWidth: size }}
-      onError={() => setFailed(true)}
+      onError={() => setStage((s) => s + 1)}
     />
   );
 }
@@ -154,7 +155,7 @@ export default function MyTeamModal({
                         : 'hover:bg-[var(--panel2)] border border-transparent',
                     ].join(' ')}
                   >
-                    <TeamBadge badge={data?.badge} name={koName} size={36} />
+                    <TeamBadge badge={data?.badge} fallbackBadge={data?.fallbackBadge} name={koName} size={36} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-bold text-[var(--text)]">{koName}</div>
                       {data?.rank != null && (

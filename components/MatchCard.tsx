@@ -11,9 +11,10 @@ interface MatchCardProps {
   myTeam?: string | null;
 }
 
-function TeamBadge({ badge, name, size = 44 }: { badge?: string | null; name: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (!badge || failed) {
+function TeamBadge({ badge, fallbackBadge, name, size = 44 }: { badge?: string | null; fallbackBadge?: string | null; name: string; size?: number }) {
+  const [stage, setStage] = useState(0); // 0=primary, 1=fallback, 2=text
+  const src = stage === 0 ? badge : stage === 1 ? fallbackBadge : null;
+  if (!src) {
     return (
       <span
         className="team-badge-fallback text-[10px] font-bold"
@@ -25,12 +26,12 @@ function TeamBadge({ badge, name, size = 44 }: { badge?: string | null; name: st
   }
   return (
     <img
-      src={badge}
+      src={src}
       alt={ko(name)}
       width={size}
       height={size}
       style={{ width: size, height: size, objectFit: 'contain', minWidth: size }}
-      onError={() => setFailed(true)}
+      onError={() => setStage((s) => s + 1)}
     />
   );
 }
@@ -60,7 +61,7 @@ export default function MatchCard({ event, teamsByName, onClick, myTeam }: Match
       <div className="flex items-center gap-3">
         {/* 홈팀 */}
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <TeamBadge badge={homeData?.badge} name={event.strHomeTeam} size={44} />
+          <TeamBadge badge={homeData?.badge} fallbackBadge={homeData?.fallbackBadge} name={event.strHomeTeam} size={44} />
           <span className={[
             'text-sm font-bold truncate',
             homeKo === myTeam ? 'text-[#3ea6ff]' : 'text-[var(--text)]',
@@ -87,7 +88,7 @@ export default function MatchCard({ event, teamsByName, onClick, myTeam }: Match
             'text-sm font-bold truncate text-right',
             awayKo === myTeam ? 'text-[#3ea6ff]' : 'text-[var(--text)]',
           ].join(' ')}>{awayKo}</span>
-          <TeamBadge badge={awayData?.badge} name={event.strAwayTeam} size={44} />
+          <TeamBadge badge={awayData?.badge} fallbackBadge={awayData?.fallbackBadge} name={event.strAwayTeam} size={44} />
         </div>
       </div>
 

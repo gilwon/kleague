@@ -1,7 +1,8 @@
 export interface TeamData {
   name: string;
   id?: string;
-  badge?: string | null;       // Supabase Storage URL (or kleague.com fallback)
+  badge?: string | null;       // Supabase Storage URL
+  fallbackBadge?: string | null; // TheSportsDB badge URL (폴백)
   rank?: number | null;
   played?: number | null;
   win?: number | null;

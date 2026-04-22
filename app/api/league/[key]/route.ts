@@ -76,7 +76,12 @@ function buildTeamsByName(
 ): Record<string, TeamData> {
   const teamsByName: Record<string, TeamData> = {};
   for (const t of rawTeams) {
-    teamsByName[t.strTeam] = { name: t.strTeam, id: t.idTeam, badge: getBadgeUrl(t.strTeam, supabaseUrl) };
+    teamsByName[t.strTeam] = {
+      name: t.strTeam,
+      id: t.idTeam,
+      badge: getBadgeUrl(t.strTeam, supabaseUrl),
+      fallbackBadge: t.strTeamBadge ?? null,
+    };
   }
   // 과거 시즌 별칭 추가 (현재 팀명으로 badge/stats 상속)
   for (const [canonical, aliases] of Object.entries(TEAM_ALIASES)) {
