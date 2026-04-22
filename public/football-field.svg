@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 680" preserveAspectRatio="xMidYMid slice">
+  <defs>
+
+    <!--
+      미세 잔디 질감 — fractalNoise multiply blend
+    -->
+    <filter id="tex" x="-1%" y="-1%" width="102%" height="102%"
+            color-interpolation-filters="linearRGB">
+      <feTurbulence type="fractalNoise"
+                    baseFrequency="0.60 0.70"
+                    numOctaves="4"
+                    seed="7"
+                    result="noise"/>
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 -3 2.5"
+        in="noise" result="mask"/>
+      <feComposite in="SourceGraphic" in2="mask" operator="in"/>
+    </filter>
+
+    <!-- 주변 비네팅 -->
+    <radialGradient id="vig" cx="50%" cy="50%" r="68%">
+      <stop offset="10%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.38)"/>
+    </radialGradient>
+
+    <!-- Penalty arc clip paths -->
+    <clipPath id="lca"><rect x="171" y="0" width="879" height="680"/></clipPath>
+    <clipPath id="rca"><rect x="0"   y="0" width="880" height="680"/></clipPath>
+
+  </defs>
+
+  <!-- ══════════════════════════════════════════
+       기본 밝은 초록 베이스
+  ══════════════════════════════════════════ -->
+  <rect width="1050" height="680" fill="#6acc28"/>
+
+  <!-- ══════════════════════════════════════════
+       수직 예초 줄무늬 — 8줄 (짝수=밝게)
+  ══════════════════════════════════════════ -->
+  <!-- 홀수 줄 (약간 어둡게) -->
+  <rect x="0"   y="0" width="131" height="680" fill="rgba(0,30,0,0.14)"/>
+  <rect x="262" y="0" width="131" height="680" fill="rgba(0,30,0,0.14)"/>
+  <rect x="524" y="0" width="131" height="680" fill="rgba(0,30,0,0.14)"/>
+  <rect x="786" y="0" width="131" height="680" fill="rgba(0,30,0,0.14)"/>
+
+  <!-- 짝수 줄 (약간 밝게) -->
+  <rect x="131" y="0" width="131" height="680" fill="rgba(200,255,100,0.10)"/>
+  <rect x="393" y="0" width="131" height="680" fill="rgba(200,255,100,0.10)"/>
+  <rect x="655" y="0" width="131" height="680" fill="rgba(200,255,100,0.10)"/>
+  <rect x="917" y="0" width="133" height="680" fill="rgba(200,255,100,0.10)"/>
+
+  <!-- ══════════════════════════════════════════
+       미세 잔디 질감 (어두운 반점)
+  ══════════════════════════════════════════ -->
+  <rect width="1050" height="680" fill="rgba(0,60,0,0.22)" filter="url(#tex)"/>
+
+  <!-- 표면 광택 (밝은 반점) -->
+  <rect width="1050" height="680" fill="rgba(180,255,80,0.18)" filter="url(#tex)"/>
+
+  <!-- 주변 비네팅 -->
+  <rect width="1050" height="680" fill="url(#vig)"/>
+
+
+  <!-- ══════════════════════════════════════════
+       필드 마킹 (FIFA 규격, 10px = 1m)
+  ══════════════════════════════════════════ -->
+  <g stroke="rgba(255,255,255,0.78)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- 외곽선 -->
+    <rect x="5" y="5" width="1040" height="670"/>
+
+    <!-- 하프라인 -->
+    <line x1="525" y1="5" x2="525" y2="675"/>
+
+    <!-- 센터 서클 (r=91.5 = 9.15m) -->
+    <circle cx="525" cy="340" r="91.5"/>
+
+    <!-- 좌측: 페널티 에어리어 / 골 에어리어 / 페널티 아크 -->
+    <rect x="5" y="138.5" width="165" height="403"/>
+    <rect x="5" y="248.5" width="55"  height="183"/>
+    <circle cx="115" cy="340" r="91.5" clip-path="url(#lca)"/>
+
+    <!-- 우측: 페널티 에어리어 / 골 에어리어 / 페널티 아크 -->
+    <rect x="880" y="138.5" width="165" height="403"/>
+    <rect x="990" y="248.5" width="55"  height="183"/>
+    <circle cx="935" cy="340" r="91.5" clip-path="url(#rca)"/>
+
+    <!-- 코너 아크 -->
+    <path d="M 5 15 Q 5 5 15 5"/>
+    <path d="M 1035 5 Q 1045 5 1045 15"/>
+    <path d="M 15 675 Q 5 675 5 665"/>
+    <path d="M 1035 675 Q 1045 675 1045 665"/>
+
+  </g>
+
+  <!-- 스폿 -->
+  <g fill="rgba(255,255,255,0.82)">
+    <circle cx="525" cy="340" r="5.5"/>
+    <circle cx="115" cy="340" r="5.5"/>
+    <circle cx="935" cy="340" r="5.5"/>
+  </g>
+
+</svg>

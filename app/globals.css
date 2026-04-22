@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #070f09;
+  --panel: #111d14;
+  --panel2: #172119;
+  --home: #ff5a5f;
+  --away: #3ea6ff;
+  --win: #16c784;
+  --draw: #f5b301;
+  --loss: #ea3943;
+  --text: #e8eaf0;
+  --muted: #8892a4;
+  --border: #1a2e1c;
+  --accent: #3ea6ff;
+  /* 축구장 배경 오버레이 (어두울수록 잔디 덜 보임) */
+  --grass-overlay: rgba(0, 8, 0, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #2a7a10;
+  /* 고화질 축구장 잔디 SVG + 가독성 오버레이 */
+  background-image:
+    linear-gradient(var(--grass-overlay), var(--grass-overlay)),
+    url('/football-field.svg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center center;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  transition: background-color 0.3s, color 0.2s;
+}
+
+/* 폼 배지 */
+.form-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.form-badge-W { background: var(--win); }
+.form-badge-D { background: var(--draw); }
+.form-badge-L { background: var(--loss); }
+.form-badge-dash { background: var(--muted); }
+
+/* 스켈레톤 펄스 */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* 스피너 */
+@keyframes spin-anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: spin-anim 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* 스크롤바 숨김 유틸 */
+.date-chip-bar,
+.scrollbar-none {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.date-chip-bar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* 팀 배지 이미지 로드 실패 폴백 */
+.team-badge-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel2);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
 }

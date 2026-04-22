@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local.example
 
 # vercel
 .vercel
@@ -39,3 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#ignore CLAUDE.md
+CLAUDE.md
+AGENTS.md
+.gitignore
+.claude/
+.bkit/
+docs/
+kleague-app-planning.md
+kleague-app-agent-test.md
+supabase/
+start-kleague-app.command
+kleague-match-app-live.html
