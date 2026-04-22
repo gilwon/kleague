@@ -286,6 +286,7 @@ export default function Home() {
   const handleLeagueChange = (key: 'k1' | 'k2') => {
     setActiveLeague(key);
     setSelectedMonth(null);
+    setSelectedDate(null);
     loadLeague(key, activeSeason);
     // 나의 팀 리그가 아닌 탭으로 이동하면 필터 해제
     if (myTeamFilterActive && myTeamLeague !== key) {
@@ -296,6 +297,7 @@ export default function Home() {
   const handleSeasonChange = (season: string) => {
     setActiveSeason(season);
     setSelectedMonth(null);
+    setSelectedDate(null);
     loadLeague(activeLeague, season);
   };
 
@@ -305,6 +307,7 @@ export default function Home() {
       if (myTeamLeague !== activeLeague) {
         setActiveLeague(myTeamLeague);
         setSelectedMonth(null);
+        setSelectedDate(null);
         loadLeague(myTeamLeague, activeSeason);
       }
       setMyTeamFilterActive(true);
@@ -356,7 +359,10 @@ export default function Home() {
     setSelectedDate((prev) => {
       if (prev && dateGroups.has(prev)) return prev;
       const today = new Date().toISOString().slice(0, 10);
-      return dateGroups.has(today) ? today : dates[0];
+      if (dateGroups.has(today)) return today;
+      // 오늘 이후 가장 가까운 날짜, 없으면 가장 최근 날짜
+      const upcoming = dates.filter((d) => d >= today);
+      return upcoming.length > 0 ? upcoming[0] : dates[dates.length - 1];
     });
   }, [dateGroups]);
 
