@@ -11,6 +11,7 @@ import Toast from '@/components/Toast';
 import SkeletonCard from '@/components/SkeletonCard';
 import Header from '@/components/Header';
 import MyTeamModal from '@/components/MyTeamModal';
+import StandingsModal from '@/components/StandingsModal';
 import { useMyTeam } from '@/hooks/useMyTeam';
 
 // ── 상수 ──────────────────────────────────────────────────
@@ -109,6 +110,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [myTeamModalOpen, setMyTeamModalOpen] = useState(false);
   const [myTeamFilterActive, setMyTeamFilterActive] = useState(false);
+  const [standingsOpen, setStandingsOpen] = useState(false);
   const { myTeam, myTeamLeague, setMyTeam } = useMyTeam();
 
   const bgRunning = useRef<Record<string, boolean>>({});
@@ -373,9 +375,15 @@ export default function Home() {
           />
         </div>
 
-        {/* 리그 탭 */}
-        <div className="max-w-3xl mx-auto px-4">
+        {/* 리그 탭 + 순위표 버튼 */}
+        <div className="max-w-3xl mx-auto px-4 flex items-center justify-between">
           <ScheduleTab activeLeague={activeLeague} onChange={handleLeagueChange} />
+          <button
+            onClick={() => setStandingsOpen(true)}
+            className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[var(--muted)] border border-[var(--border)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors"
+          >
+            순위표
+          </button>
         </div>
 
         {/* 시즌 선택 */}
@@ -584,6 +592,15 @@ export default function Home() {
       )}
 
       <Toast message={toast} onClose={() => setToast(null)} />
+
+      {standingsOpen && currentData && (
+        <StandingsModal
+          allEvents={allEvents}
+          teamsByName={teamsByName}
+          leagueKey={activeLeague}
+          onClose={() => setStandingsOpen(false)}
+        />
+      )}
     </div>
   );
 }
